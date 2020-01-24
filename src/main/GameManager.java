@@ -4,9 +4,7 @@ import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
-import javafx.scene.shape.Line;
-import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.*;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -18,9 +16,11 @@ class GameManager {
     private static ArrayList<Rectangle> obstacles;
     private static final int NUMBER_OF_RAYS = 100;
     private static final float VIEWING_ANGLE = 60;
+    private static Rectangle shadow;
 
     static void gameLoop(){
         updateRays();
+        updateShadow();
         if(collisionDetection()){
             player.update();
             player.get_circle().toFront();
@@ -33,6 +33,7 @@ class GameManager {
         initWalls(root);
         initObstacles(root);
         initRays(root);
+        initShadow(root);
     }
 
     private static boolean collisionDetection(){
@@ -77,6 +78,22 @@ class GameManager {
             rays.get(i).setEndX(x);
             rays.get(i).setEndY(y);
         }
+    }
+
+    private static void updateShadow() {
+        Polygon lightSource = new Polygon();
+        ArrayList<Double> points = new ArrayList<>();
+
+        points.add((double)player.get_pos().get_x());
+        points.add((double)player.get_pos().get_y());
+        for(Line l: rays){
+            points.add(l.getEndX());
+            points.add(l.getEndY());
+        }
+
+        lightSource.getPoints().clear();
+        lightSource.getPoints().addAll(points);
+        shadow.setClip(Shape.subtract(shadow, lightSource));
     }
 
     private static void initListeners(Scene scene){
@@ -164,5 +181,10 @@ class GameManager {
             rays.add(line);
         }
         root.getChildren().addAll(rays);
+    }
+
+    private static void initShadow(Pane root){
+        shadow = new Rectangle(0,0, Main.getSize(),Main.getSize());
+        root.getChildren().add(shadow);
     }
 }

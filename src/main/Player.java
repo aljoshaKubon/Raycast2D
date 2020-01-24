@@ -63,7 +63,7 @@ class Player {
         Vector2D nextPos = new Vector2D(_pos);
         Vector2D nextDir = new Vector2D(_dir);
         nextDir.normalize();
-        nextDir.mul(_speed);
+        nextDir.mul(_speed*_velocity);
         nextPos.add(nextDir);
 
         return new Circle(nextPos.get_x(), nextPos.get_y(), _circle.getRadius(), _circle.getFill());

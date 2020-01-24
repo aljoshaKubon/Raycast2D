@@ -12,7 +12,7 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception{
         Pane root = new Pane();
-        root.setStyle("-fx-background-color: black;");
+        root.setStyle("-fx-background-color: lightgrey;");
         Scene scene = new Scene(root, SIZE, SIZE);
         primaryStage.setTitle("Raycast2D");
         primaryStage.setScene(scene);
