@@ -1,5 +1,6 @@
 package main;
 
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
@@ -14,6 +15,7 @@ class GameManager {
     private static ArrayList<Line> walls;
     private static ArrayList<Line> rays;
     private static ArrayList<Rectangle> obstacles;
+    private static ArrayList<Rectangle> illuminatedObstacles;
     private static final int NUMBER_OF_RAYS = 1000;
     private static final float VIEWING_ANGLE = 60;
     private static Rectangle shadow;
@@ -48,31 +50,13 @@ class GameManager {
     }
 
     /**
-     * Aggregation of collision detection.
+     * Collision detection for the player.
      * @return a boolean to decide whether the player is able to move or not.
      */
     private static boolean collisionDetection(){
+        collisionDetectionRays();
+
         Circle nextPosition = player.getNextMovePosition();
-
-        for(Line l: rays){
-            for(Line w: walls) {
-                Vector2D collisionPoint = CollisionDetector.lineLine(l, w);
-
-                if(collisionPoint != null){
-                    l.setEndX(collisionPoint.get_x());
-                    l.setEndY(collisionPoint.get_y());
-                }
-            }
-
-            for(Rectangle r: obstacles){
-                Vector2D collisionPoint = CollisionDetector.lineRectangle(l, r);
-
-                if(collisionPoint != null){
-                    l.setEndX(collisionPoint.get_x());
-                    l.setEndY(collisionPoint.get_y());
-                }
-            }
-        }
 
         for(Line l: walls){
             if(CollisionDetector.lineCircle(l, nextPosition)) return false;
@@ -83,6 +67,33 @@ class GameManager {
         }
 
         return true;
+    }
+
+    /**
+     * Collision detection for the rays.
+     */
+    private static void collisionDetectionRays(){
+        for(Line l: rays){
+            for(Line w: walls) {
+                Vector2D collisionPoint = CollisionDetector.lineLine(l, w);
+
+                if(collisionPoint != null){
+                    l.setEndX(collisionPoint.get_x());
+                    l.setEndY(collisionPoint.get_y());
+                }
+            }
+
+            illuminatedObstacles.clear();
+            for(Rectangle r: obstacles){
+                Vector2D collisionPoint = CollisionDetector.lineRectangle(l, r);
+
+                if(collisionPoint != null){
+                    illuminatedObstacles.add(r);
+                    l.setEndX(collisionPoint.get_x());
+                    l.setEndY(collisionPoint.get_y());
+                }
+            }
+        }
     }
 
     /**
@@ -107,19 +118,22 @@ class GameManager {
      * The shadow rectangle which covers the whole screen is now clipped by the calculated lightSource by subtracting the shadow with the lightSource and using it as clip shape.
      */
     private static void updateShadow() {
+
         Polygon lightSource = new Polygon();
         ArrayList<Double> points = new ArrayList<>();
 
-        for(Line l: rays){
+        for (Line l : rays) {
             points.add(l.getEndX());
             points.add(l.getEndY());
         }
-        points.add((double)player.get_pos().get_x());
-        points.add((double)player.get_pos().get_y());
+        points.add((double) player.get_pos().get_x());
+        points.add((double) player.get_pos().get_y());
 
         lightSource.getPoints().addAll(points);
         lightSource.setSmooth(true);
-        shadow.setClip(Shape.subtract(shadow, lightSource));
+
+        Shape clip = Shape.subtract(shadow, lightSource);
+        shadow.setClip(clip);
     }
 
     /**
@@ -204,6 +218,7 @@ class GameManager {
      */
     private static void initObstacles(Pane root){
         obstacles = new ArrayList<>();
+        illuminatedObstacles = new ArrayList<>();
         Random r = new Random();
         final int obstacleCount = 5;
 
