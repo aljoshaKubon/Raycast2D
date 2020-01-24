@@ -43,6 +43,7 @@ class Player {
 
     private void rotate(){
         NumberBinding sum = Bindings.add(_rotationDir*_rotationSpeed, _angle);
+        if(sum.floatValue() > 360) sum.subtract(360);
         _angle.set(sum.floatValue());
     }
 

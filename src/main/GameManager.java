@@ -71,8 +71,8 @@ class GameManager {
 
     private static void updateRays(){
         for(int i = 0; i < rays.size(); i++){
-            float x = (float)(rays.get(i).getStartX() + 1000*Math.sin(Math.toRadians(player.get_angle()) + Math.toRadians(( VIEWING_ANGLE/rays.size())*i)) );
-            float y = (float)(rays.get(i).getStartY() + 1000*Math.cos(Math.toRadians(player.get_angle()) + Math.toRadians(( VIEWING_ANGLE/rays.size())*i)) );
+            float x = (float)(rays.get(i).getStartX() + 1000*Math.sin(Math.toRadians( (90 - VIEWING_ANGLE/2) + -player.get_angle()) + Math.toRadians(( VIEWING_ANGLE/rays.size())*i)) );
+            float y = (float)(rays.get(i).getStartY() + 1000*Math.cos(Math.toRadians( (90 - VIEWING_ANGLE/2) + -player.get_angle()) + Math.toRadians(( VIEWING_ANGLE/rays.size())*i)) );
 
             rays.get(i).setEndX(x);
             rays.get(i).setEndY(y);
