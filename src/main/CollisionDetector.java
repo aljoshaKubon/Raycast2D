@@ -6,7 +6,7 @@ import javafx.scene.shape.Rectangle;
 
 import java.util.ArrayList;
 
-public class CollisionDetector {
+class CollisionDetector {
 
     static Vector2D lineLine(Line l1, Line l2){
         float x1 = (float)l1.getStartX();
@@ -19,8 +19,9 @@ public class CollisionDetector {
         float x4 = (float)l2.getEndX();
         float y4 = (float)l2.getEndY();
 
-        float uA = ((x4-x3)*(y1-y3) - (y4-y3)*(x1-x3)) / ((y4-y3)*(x2-x1) - (x4-x3)*(y2-y1));
-        float uB = ((x2-x1)*(y1-y3) - (y2-y1)*(x1-x3)) / ((y4-y3)*(x2-x1) - (x4-x3)*(y2-y1));
+        float v = (y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1);
+        float uA = ((x4-x3)*(y1-y3) - (y4-y3)*(x1-x3)) / v;
+        float uB = ((x2-x1)*(y1-y3) - (y2-y1)*(x1-x3)) / v;
 
         if(uA >= 0 && uA <= 1 && uB >= 0 && uB <= 1){
             float intersectionX = x1 + (uA * (x2-x1));

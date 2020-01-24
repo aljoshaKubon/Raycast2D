@@ -19,8 +19,9 @@ class GameManager {
     private static Rectangle shadow;
 
     static void gameLoop(){
-        updateRays();
         updateShadow();
+        updateRays();
+
         if(collisionDetection()){
             player.update();
             player.get_circle().toFront();
@@ -84,15 +85,15 @@ class GameManager {
         Polygon lightSource = new Polygon();
         ArrayList<Double> points = new ArrayList<>();
 
-        points.add((double)player.get_pos().get_x());
-        points.add((double)player.get_pos().get_y());
         for(Line l: rays){
             points.add(l.getEndX());
             points.add(l.getEndY());
         }
+        points.add((double)player.get_pos().get_x());
+        points.add((double)player.get_pos().get_y());
 
-        lightSource.getPoints().clear();
         lightSource.getPoints().addAll(points);
+        lightSource.setSmooth(true);
         shadow.setClip(Shape.subtract(shadow, lightSource));
     }
 
@@ -178,6 +179,7 @@ class GameManager {
             line.startXProperty().bind(player.get_pos().get_property_x());
             line.startYProperty().bind(player.get_pos().get_property_y());
             line.toBack();
+            line.setVisible(false);
             rays.add(line);
         }
         root.getChildren().addAll(rays);
