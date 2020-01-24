@@ -22,7 +22,7 @@ class GameManager {
     static void gameLoop(){
         updateRays();
         if(collisionDetection()){
-            player.move();
+            player.update();
             player.get_circle().toFront();
         }
     }
@@ -71,8 +71,8 @@ class GameManager {
 
     private static void updateRays(){
         for(int i = 0; i < rays.size(); i++){
-            float x = (float)(rays.get(i).getStartX() + 1000*Math.sin(Math.toRadians((VIEWING_ANGLE/rays.size())*i)) );
-            float y = (float)(rays.get(i).getStartY() + 1000*Math.cos(Math.toRadians((VIEWING_ANGLE/rays.size())*i)) );
+            float x = (float)(rays.get(i).getStartX() + 1000*Math.sin(Math.toRadians(player.get_angle()) + Math.toRadians(( VIEWING_ANGLE/rays.size())*i)) );
+            float y = (float)(rays.get(i).getStartY() + 1000*Math.cos(Math.toRadians(player.get_angle()) + Math.toRadians(( VIEWING_ANGLE/rays.size())*i)) );
 
             rays.get(i).setEndX(x);
             rays.get(i).setEndY(y);
@@ -84,16 +84,16 @@ class GameManager {
             KeyCode keyCode = e.getCode();
 
             if(keyCode.equals(KeyCode.S)){
-                player.get_dir().set_y(1);
+                player.set_velocity(-1);
             }
             if(keyCode.equals(KeyCode.W)){
-                player.get_dir().set_y(-1);
+                player.set_velocity(1);
             }
             if(keyCode.equals(KeyCode.A)){
-                player.get_dir().set_x(-1);
+                player.set_rotationDir(-1);
             }
             if(keyCode.equals(KeyCode.D)){
-                player.get_dir().set_x(1);
+                player.set_rotationDir(1);
             }
         });
 
@@ -101,10 +101,10 @@ class GameManager {
             KeyCode keyCode = e.getCode();
 
             if(keyCode.equals(KeyCode.S) || keyCode.equals(KeyCode.W)){
-                player.get_dir().set_y(0);
+                player.set_velocity(0);
             }
             if(keyCode.equals(KeyCode.A) || keyCode.equals(KeyCode.D)){
-                player.get_dir().set_x(0);
+                player.set_rotationDir(0);
             }
         });
     }
@@ -116,6 +116,7 @@ class GameManager {
         circle.setFill(Color.CORNFLOWERBLUE);
         circle.centerXProperty().bind(player.get_pos().get_property_x());
         circle.centerYProperty().bind(player.get_pos().get_property_y());
+        circle.rotateProperty().bind(player.get_angle_property());
         root.getChildren().add(circle);
     }
 

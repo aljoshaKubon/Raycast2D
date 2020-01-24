@@ -38,10 +38,6 @@ public class Vector2D {
 
     float get_y(){return _y.get();}
 
-    boolean isEmpty(){
-        return _x.get() != 0 && _y.get() != 0;
-    }
-
     void add(Vector2D v){
         NumberBinding sum = Bindings.add(_x, v.get_property_x());
         _x.set(sum.floatValue());
