@@ -26,10 +26,8 @@ public class Main extends Application {
 
             @Override
             public void handle(long now) {
-                if(now - lastUpdate >= 10_000_000){
-                    GameManager.gameLoop();
-                    lastUpdate = now;
-                }
+                GameManager.gameLoop();
+                lastUpdate = now;
             }
         }.start();
     }

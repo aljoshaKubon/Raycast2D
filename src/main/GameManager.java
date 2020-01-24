@@ -14,10 +14,14 @@ class GameManager {
     private static ArrayList<Line> walls;
     private static ArrayList<Line> rays;
     private static ArrayList<Rectangle> obstacles;
-    private static final int NUMBER_OF_RAYS = 100;
+    private static final int NUMBER_OF_RAYS = 1000;
     private static final float VIEWING_ANGLE = 60;
     private static Rectangle shadow;
 
+    /**
+     * The main loop in which everything is called and handled.
+     * It is called every frame by the JavaFX AnimationTimer in the Main class.
+     */
     static void gameLoop(){
         updateShadow();
         updateRays();
@@ -28,6 +32,12 @@ class GameManager {
         }
     }
 
+    /**
+     * Aggregation of all initialising methods.
+     * Is called by the Main class before starting the AnimationTimer.
+     * @param scene Node of the JavaFX framework. Is used to add the actionListeners.
+     * @param root Node of the JavaFX framework. Is used to add the initialised nodes as children to see them on the screen.
+     */
     static void init(Scene scene, Pane root){
         initListeners(scene);
         initPlayer(root);
@@ -37,6 +47,10 @@ class GameManager {
         initShadow(root);
     }
 
+    /**
+     * Aggregation of collision detection.
+     * @return a boolean to decide whether the player is able to move or not.
+     */
     private static boolean collisionDetection(){
         Circle nextPosition = player.getNextMovePosition();
 
@@ -71,6 +85,12 @@ class GameManager {
         return true;
     }
 
+    /**
+     * Update function/method for the shot rays.
+     * The rays have their start position at the position of the player.
+     * With the trigonometric functions sine and cosines the rays are shot in a viewing angle of 60° in player direction.
+     * (VIEWING_ANGLE/rays.size())*i is used to shot the rays in cone.
+     */
     private static void updateRays(){
         for(int i = 0; i < rays.size(); i++){
             float x = (float)(rays.get(i).getStartX() + 1000*Math.sin(Math.toRadians( (90 - VIEWING_ANGLE/2) + -player.get_angle()) + Math.toRadians(( VIEWING_ANGLE/rays.size())*i)) );
@@ -81,6 +101,11 @@ class GameManager {
         }
     }
 
+    /**
+     * Update function/method for the shadow.
+     * The variable lightSource is a created polygon in the form of the shot rays in inclusion of their hit points.
+     * The shadow rectangle which covers the whole screen is now clipped by the calculated lightSource by subtracting the shadow with the lightSource and using it as clip shape.
+     */
     private static void updateShadow() {
         Polygon lightSource = new Polygon();
         ArrayList<Double> points = new ArrayList<>();
@@ -97,6 +122,10 @@ class GameManager {
         shadow.setClip(Shape.subtract(shadow, lightSource));
     }
 
+    /**
+     * Method/Function to initialise the actionListeners. In this case they are keyListeners.
+     * @param scene Node of the JavaFX framework. It is used to add the listeners onto it.
+     */
     private static void initListeners(Scene scene){
         scene.setOnKeyPressed( e ->{
             KeyCode keyCode = e.getCode();
@@ -127,6 +156,11 @@ class GameManager {
         });
     }
 
+    /**
+     * Method/Function to initialise the player.
+     * A Circle node is created and bound to the players position and rotation properties.
+     * @param root Node of the JavaFX framework. Is used to add the initialised nodes as children to see them on the screen.
+     */
     private static void initPlayer(Pane root){
         Circle circle = new Circle();
         player = new Player(new Vector2D((float)Main.getSize()/2,(float)Main.getSize()/2), circle);
@@ -138,8 +172,14 @@ class GameManager {
         root.getChildren().add(circle);
     }
 
+    /**
+     * Method/Function to initialise the walls.
+     * The walls are the boundaries for the player and the shot rays.
+     * They are set in the positions of screen edges.
+     * @param root Node of the JavaFX framework. Is used to add the initialised nodes as children to see them on the screen.
+     */
     private static void initWalls(Pane root){
-        walls = new ArrayList<Line>();
+        walls = new ArrayList<>();
 
         //Top wall
         Line uWall = new Line(0, 0, Main.getSize(), 0);
@@ -157,8 +197,13 @@ class GameManager {
         root.getChildren().addAll(walls);
     }
 
+    /**
+     * Method/Function to initialise the obstacles.
+     * The obstacles are generated with random positions and sizes.
+     * @param root Node of the JavaFX framework. Is used to add the initialised nodes as children to see them on the screen.
+     */
     private static void initObstacles(Pane root){
-        obstacles = new ArrayList<Rectangle>();
+        obstacles = new ArrayList<>();
         Random r = new Random();
         final int obstacleCount = 5;
 
@@ -170,8 +215,14 @@ class GameManager {
         root.getChildren().addAll(obstacles);
     }
 
+    /**
+     * Method/Function to initialise the rays.
+     * The rays have their start position bound at the center of the player circle.
+     * For debugging is is possible to set the rays visible to look at their beaming route.
+     * @param root Node of the JavaFX framework. Is used to add the initialised nodes as children to see them on the screen.
+     */
     private static void initRays(Pane root){
-        rays = new ArrayList<Line>();
+        rays = new ArrayList<>();
 
         for(int i = 0; i < NUMBER_OF_RAYS; i++){
             Line line = new Line();
@@ -185,6 +236,12 @@ class GameManager {
         root.getChildren().addAll(rays);
     }
 
+    /**
+     * Method/Function to initialise the shadow.
+     * Simple black rectangle which covers the whole screen.
+     * In the updateShadow method/function it is clipped to give the player the feeling of a flashlight.
+     * @param root Node of the JavaFX framework. Is used to add the initialised nodes as children to see them on the screen.
+     */
     private static void initShadow(Pane root){
         shadow = new Rectangle(0,0, Main.getSize(),Main.getSize());
         root.getChildren().add(shadow);
