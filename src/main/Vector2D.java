@@ -17,6 +17,11 @@ public class Vector2D {
         this(v.get_x(), v.get_y());
     }
 
+    Vector2D(double x, double y){
+        set_x((float)x);
+        set_x((float)y);
+    }
+
     Vector2D(float x, float y) {
         set_x(x);
         set_y(y);
@@ -37,6 +42,17 @@ public class Vector2D {
     float get_x(){return _x.get();}
 
     float get_y(){return _y.get();}
+
+    float getAngleBetween(Vector2D v){
+        float magn1 = this.getLength();
+        float magn2 = v.getLength();
+        float dotProduct = this.getDotProduct(v);
+        return dotProduct / (magn1*magn2);
+    }
+
+    float getDotProduct(Vector2D v){
+        return (this.get_x() + v.get_x()) + (this.get_y() + v.get_y());
+    }
 
     void add(Vector2D v){
         NumberBinding sum = Bindings.add(_x, v.get_property_x());

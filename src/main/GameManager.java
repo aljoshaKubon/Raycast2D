@@ -55,23 +55,27 @@ class GameManager {
         initCanvas(root);
     }
 
+    /**
+     * Approach to translate the 2D ray cast into a 3D scene.
+     * Using canvas to not create 800single rectangle objects for every ray.
+     */
     private static void drawOnCanvas(){
         int greyScale;
         float length;
         float height;
         Line r;
 
-        gc.clearRect(0,0, WIDTH/2, HEIGHT);
+        gc.clearRect(0,0, (float)WIDTH/2, HEIGHT);
         for(int i = 0; i < rays.size()-1; i++){
             r = rays.get(i);
             length = (float)Math.sqrt(Math.pow((r.getEndX() - r.getStartX()),2) + Math.pow((r.getEndY() - r.getStartY()), 2));
-            height = map(length, 0, 800, 0, HEIGHT/2);
-            height = HEIGHT/2 - height;
-            greyScale = (int)map(length, 0, 800, 0, 254);
+            height = map(length, 0, 1150, 1, (float)HEIGHT/2);
+            height = (float)HEIGHT/2 - height;
+            greyScale = (int)map(length, 0, 1150, 100, 254);
             greyScale = 255-greyScale;
 
             gc.setFill(Color.rgb(greyScale, greyScale, greyScale));
-            gc.fillRect((((float)WIDTH/2)/rays.size())*i, (float)HEIGHT/4, 1, height);
+            gc.fillRect((((float)WIDTH/2)/rays.size())*i, (float)HEIGHT/2-(height/2), 1, height);
         }
     }
 
@@ -132,8 +136,8 @@ class GameManager {
      */
     private static void updateRays(){
         for(int i = 0; i < rays.size(); i++){
-            float x = (float)(rays.get(i).getStartX() + 1000*Math.sin(Math.toRadians( (90 - VIEWING_ANGLE/2) + -player.get_angle()) + Math.toRadians(( VIEWING_ANGLE/rays.size())*i)) );
-            float y = (float)(rays.get(i).getStartY() + 1000*Math.cos(Math.toRadians( (90 - VIEWING_ANGLE/2) + -player.get_angle()) + Math.toRadians(( VIEWING_ANGLE/rays.size())*i)) );
+            float x = (float)(rays.get(i).getStartX() + 1150*Math.sin(Math.toRadians( (90 - VIEWING_ANGLE/2) + -player.get_angle()) + Math.toRadians(( VIEWING_ANGLE/rays.size())*i)) );
+            float y = (float)(rays.get(i).getStartY() + 1150*Math.cos(Math.toRadians( (90 - VIEWING_ANGLE/2) + -player.get_angle()) + Math.toRadians(( VIEWING_ANGLE/rays.size())*i)) );
 
             rays.get(i).setEndX(x);
             rays.get(i).setEndY(y);
