@@ -1,6 +1,8 @@
 package main;
 
 import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -16,9 +18,10 @@ class GameManager {
     private static ArrayList<Rectangle> obstacles;
     private static final int WIDTH = Main.getSize()[0];
     private static final int HEIGHT = Main.getSize()[1];
-    private static final int NUMBER_OF_RAYS = 1000;
-    private static final float VIEWING_ANGLE = 60;
+    private static final int NUMBER_OF_RAYS = 800;
+    private static final float VIEWING_ANGLE = 45;
     private static Rectangle shadow;
+    private static GraphicsContext gc;
 
     /**
      * The main loop in which everything is called and handled.
@@ -32,6 +35,8 @@ class GameManager {
             player.update();
             player.get_circle().toFront();
         }
+
+        drawOnCanvas();
     }
 
     /**
@@ -47,6 +52,31 @@ class GameManager {
         initObstacles(root);
         initRays(root);
         initShadow(root);
+        initCanvas(root);
+    }
+
+    private static void drawOnCanvas(){
+        int greyScale;
+        float length;
+        float height;
+        Line r;
+
+        gc.clearRect(0,0, WIDTH/2, HEIGHT);
+        for(int i = 0; i < rays.size()-1; i++){
+            r = rays.get(i);
+            length = (float)Math.sqrt(Math.pow((r.getEndX() - r.getStartX()),2) + Math.pow((r.getEndY() - r.getStartY()), 2));
+            height = map(length, 0, 800, 0, HEIGHT/2);
+            height = HEIGHT/2 - height;
+            greyScale = (int)map(length, 0, 800, 0, 254);
+            greyScale = 255-greyScale;
+
+            gc.setFill(Color.rgb(greyScale, greyScale, greyScale));
+            gc.fillRect((((float)WIDTH/2)/rays.size())*i, (float)HEIGHT/4, 1, height);
+        }
+    }
+
+    private static float map(float value, float minA, float maxA, float minB, float maxB) {
+        return (1 - ((value - minA) / (maxA - minA))) * minB + ((value - minA) / (maxA - minA)) * maxB;
     }
 
     /**
@@ -220,7 +250,7 @@ class GameManager {
         final int obstacleCount = 5;
 
         for(int i = 0; i < obstacleCount; i++){
-            Rectangle rect = new Rectangle(r.nextInt(WIDTH/2 + 10)-10, r.nextInt(HEIGHT + 10)-10, 50 + r.nextInt(50), 50 + r.nextInt(50));
+            Rectangle rect = new Rectangle(r.nextInt(WIDTH/2 + 50)-100, r.nextInt(HEIGHT + 10)-10, 50 + r.nextInt(50), 50 + r.nextInt(50));
             rect.setFill(Color.RED);
             obstacles.add(rect);
         }
@@ -257,5 +287,17 @@ class GameManager {
     private static void initShadow(Pane root){
         shadow = new Rectangle(0,0, (float)WIDTH/2, HEIGHT);
         root.getChildren().add(shadow);
+    }
+
+    /**
+     * Method/Function to initialise the canvas.
+     * The canvas is used to display the pseudo 3D perspective of the ray casting process.
+     * @param root Node of the JavaFX framework. Is used to add the initialised nodes as children to see them on the screen.
+     */
+    private static void initCanvas(Pane root){
+        Canvas canvas = new Canvas((float)WIDTH/2, HEIGHT);
+        gc = canvas.getGraphicsContext2D();
+        canvas.setTranslateX((float)WIDTH/2);
+        root.getChildren().add(canvas);
     }
 }

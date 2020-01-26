@@ -23,12 +23,9 @@ public class Main extends Application {
         GameManager.init(scene, root);
 
         new AnimationTimer(){
-            private long lastUpdate = 0;
-
             @Override
             public void handle(long now) {
                 GameManager.gameLoop();
-                lastUpdate = now;
             }
         }.start();
     }
