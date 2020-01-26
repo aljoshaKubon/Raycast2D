@@ -7,13 +7,14 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 public class Main extends Application {
-    private static final int SIZE = 800;
+    private static final int WIDTH = 1600;
+    private static final int HEIGHT = 800;
 
     @Override
     public void start(Stage primaryStage) throws Exception{
         Pane root = new Pane();
         root.setStyle("-fx-background-color: lightgrey;");
-        Scene scene = new Scene(root, SIZE, SIZE);
+        Scene scene = new Scene(root, WIDTH, HEIGHT);
         primaryStage.setTitle("Raycast2D");
         primaryStage.setScene(scene);
         primaryStage.setResizable(false);
@@ -32,8 +33,8 @@ public class Main extends Application {
         }.start();
     }
 
-    static int getSize(){
-        return SIZE;
+    static int[] getSize(){
+        return new int[]{WIDTH, HEIGHT};
     }
 
     public static void main(String[] args) {

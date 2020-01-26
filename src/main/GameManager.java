@@ -1,6 +1,5 @@
 package main;
 
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
@@ -15,7 +14,8 @@ class GameManager {
     private static ArrayList<Line> walls;
     private static ArrayList<Line> rays;
     private static ArrayList<Rectangle> obstacles;
-    private static ArrayList<Rectangle> illuminatedObstacles;
+    private static final int WIDTH = Main.getSize()[0];
+    private static final int HEIGHT = Main.getSize()[1];
     private static final int NUMBER_OF_RAYS = 1000;
     private static final float VIEWING_ANGLE = 60;
     private static Rectangle shadow;
@@ -83,12 +83,10 @@ class GameManager {
                 }
             }
 
-            illuminatedObstacles.clear();
             for(Rectangle r: obstacles){
                 Vector2D collisionPoint = CollisionDetector.lineRectangle(l, r);
 
                 if(collisionPoint != null){
-                    illuminatedObstacles.add(r);
                     l.setEndX(collisionPoint.get_x());
                     l.setEndY(collisionPoint.get_y());
                 }
@@ -177,7 +175,7 @@ class GameManager {
      */
     private static void initPlayer(Pane root){
         Circle circle = new Circle();
-        player = new Player(new Vector2D((float)Main.getSize()/2,(float)Main.getSize()/2), circle);
+        player = new Player(new Vector2D((float)(WIDTH/2)/2,(float)HEIGHT/2), circle);
         circle.setRadius(10);
         circle.setFill(Color.CORNFLOWERBLUE);
         circle.centerXProperty().bind(player.get_pos().get_property_x());
@@ -196,16 +194,16 @@ class GameManager {
         walls = new ArrayList<>();
 
         //Top wall
-        Line uWall = new Line(0, 0, Main.getSize(), 0);
+        Line uWall = new Line(0, 0, (float)WIDTH/2, 0);
         walls.add(uWall);
         //Left wall
-        Line lWall = new Line(0, 0, 0, Main.getSize());
+        Line lWall = new Line(0, 0, 0, HEIGHT);
         walls.add(lWall);
         //Right wall
-        Line rWall = new Line(Main.getSize(), 0, Main.getSize(), Main.getSize());
+        Line rWall = new Line((float)WIDTH/2, 0, (float)WIDTH/2, HEIGHT);
         walls.add(rWall);
         //Bottom wall
-        Line dWall = new Line(0, Main.getSize(), Main.getSize(), Main.getSize());
+        Line dWall = new Line(0, HEIGHT, (float)WIDTH/2, HEIGHT);
         walls.add(dWall);
 
         root.getChildren().addAll(walls);
@@ -218,12 +216,11 @@ class GameManager {
      */
     private static void initObstacles(Pane root){
         obstacles = new ArrayList<>();
-        illuminatedObstacles = new ArrayList<>();
         Random r = new Random();
         final int obstacleCount = 5;
 
         for(int i = 0; i < obstacleCount; i++){
-            Rectangle rect = new Rectangle(r.nextInt(Main.getSize() + 10)-10, r.nextInt(Main.getSize() + 10)-10, 50 + r.nextInt(50), 50 + r.nextInt(50));
+            Rectangle rect = new Rectangle(r.nextInt(WIDTH/2 + 10)-10, r.nextInt(HEIGHT + 10)-10, 50 + r.nextInt(50), 50 + r.nextInt(50));
             rect.setFill(Color.RED);
             obstacles.add(rect);
         }
@@ -258,7 +255,7 @@ class GameManager {
      * @param root Node of the JavaFX framework. Is used to add the initialised nodes as children to see them on the screen.
      */
     private static void initShadow(Pane root){
-        shadow = new Rectangle(0,0, Main.getSize(),Main.getSize());
+        shadow = new Rectangle(0,0, (float)WIDTH/2, HEIGHT);
         root.getChildren().add(shadow);
     }
 }
