@@ -11,7 +11,7 @@ public class Main extends Application {
     private static final int HEIGHT = 800;
 
     @Override
-    public void start(Stage primaryStage) throws Exception{
+    public void start(Stage primaryStage) {
         Pane root = new Pane();
         root.setStyle("-fx-background-color: lightgrey;");
         Scene scene = new Scene(root, WIDTH, HEIGHT);

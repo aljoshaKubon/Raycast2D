@@ -6,7 +6,7 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 
-public class Ray extends Line {
+class Ray extends Line {
     private Color _colorOnHit = null;
 
     void updateCollision(Node node){
@@ -28,5 +28,13 @@ public class Ray extends Line {
 
     Color getColorOnHit(){
         return _colorOnHit;
+    }
+
+    float getAngle(){
+        float angle = (float) Math.toDegrees(Math.atan2(this.getEndY() - this.getStartY(), this.getEndX() - this.getStartX()));
+        if(angle < 0){
+            angle += 360;
+        }
+        return angle;
     }
 }

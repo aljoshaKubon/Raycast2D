@@ -19,7 +19,7 @@ class GameManager {
     private static final int WIDTH = Main.getSize()[0];
     private static final int HEIGHT = Main.getSize()[1];
     private static final int NUMBER_OF_RAYS = 800;
-    private static final float VIEWING_ANGLE = 45;
+    private static final float VIEWING_ANGLE = 60;
     private static Rectangle shadow;
     private static GraphicsContext gc;
 
@@ -56,7 +56,7 @@ class GameManager {
     }
 
     /**
-     * Approach to translate the 2D ray cast into a 3D scene.
+     * Approach to translate the 2D ray cast into a 3D projection.
      * Using canvas to not create 800single rectangle objects for every ray.
      */
     private static void drawOnCanvas(){
@@ -72,6 +72,7 @@ class GameManager {
             length = (float)Math.sqrt(Math.pow((r.getEndX() - r.getStartX()),2) + Math.pow((r.getEndY() - r.getStartY()), 2));
             height = map(length, 0, 1150, 1, (float)HEIGHT/2);
             height = (float)HEIGHT/2 - height;
+
             color = r.getColorOnHit();
             grayScale = map(length, 0f, 1150f, 0.1f, 1f);
             color = color.interpolate(Color.BLACK, grayScale);
@@ -127,9 +128,11 @@ class GameManager {
      * (VIEWING_ANGLE/rays.size())*i is used to shot the rays in cone.
      */
     private static void updateRays(){
+
         for(int i = 0; i < rays.size(); i++){
-            float x = (float)(rays.get(i).getStartX() + 1150*Math.sin(Math.toRadians( (90 - VIEWING_ANGLE/2) + -player.get_angle()) + Math.toRadians(( VIEWING_ANGLE/rays.size())*i)) );
-            float y = (float)(rays.get(i).getStartY() + 1150*Math.cos(Math.toRadians( (90 - VIEWING_ANGLE/2) + -player.get_angle()) + Math.toRadians(( VIEWING_ANGLE/rays.size())*i)) );
+            double v = Math.toRadians( (90 - VIEWING_ANGLE/2) + -player.get_angle()) + Math.toRadians(( VIEWING_ANGLE/rays.size())*i);
+            float x = (float)(rays.get(i).getStartX() + 1150*Math.sin(v));
+            float y = (float)(rays.get(i).getStartY() + 1150*Math.cos(v));
 
             rays.get(i).setEndX(x);
             rays.get(i).setEndY(y);
@@ -142,7 +145,6 @@ class GameManager {
      * The shadow rectangle which covers the whole screen is now clipped by the calculated lightSource by subtracting the shadow with the lightSource and using it as clip shape.
      */
     private static void updateShadow() {
-
         Polygon lightSource = new Polygon();
         ArrayList<Double> points = new ArrayList<>();
 
