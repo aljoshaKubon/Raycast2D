@@ -14,7 +14,7 @@ import java.util.Random;
 class GameManager {
     private static Player player;
     private static ArrayList<Line> walls;
-    private static ArrayList<Line> rays;
+    private static ArrayList<Ray> rays;
     private static ArrayList<Rectangle> obstacles;
     private static final int WIDTH = Main.getSize()[0];
     private static final int HEIGHT = Main.getSize()[1];
@@ -60,10 +60,11 @@ class GameManager {
      * Using canvas to not create 800single rectangle objects for every ray.
      */
     private static void drawOnCanvas(){
-        int greyScale;
+        Color color;
+        float grayScale;
         float length;
         float height;
-        Line r;
+        Ray r;
 
         gc.clearRect(0,0, (float)WIDTH/2, HEIGHT);
         for(int i = 0; i < rays.size()-1; i++){
@@ -71,10 +72,11 @@ class GameManager {
             length = (float)Math.sqrt(Math.pow((r.getEndX() - r.getStartX()),2) + Math.pow((r.getEndY() - r.getStartY()), 2));
             height = map(length, 0, 1150, 1, (float)HEIGHT/2);
             height = (float)HEIGHT/2 - height;
-            greyScale = (int)map(length, 0, 1150, 100, 254);
-            greyScale = 255-greyScale;
+            color = r.getColorOnHit();
+            grayScale = map(length, 0f, 1150f, 0.1f, 1f);
+            color = color.interpolate(Color.BLACK, grayScale);
 
-            gc.setFill(Color.rgb(greyScale, greyScale, greyScale));
+            gc.setFill(color);
             gc.fillRect((((float)WIDTH/2)/rays.size())*i, (float)HEIGHT/2-(height/2), 1, height);
         }
     }
@@ -107,23 +109,13 @@ class GameManager {
      * Collision detection for the rays.
      */
     private static void collisionDetectionRays(){
-        for(Line l: rays){
+        for(Ray l: rays){
             for(Line w: walls) {
-                Vector2D collisionPoint = CollisionDetector.lineLine(l, w);
-
-                if(collisionPoint != null){
-                    l.setEndX(collisionPoint.get_x());
-                    l.setEndY(collisionPoint.get_y());
-                }
+                l.updateCollision(w);
             }
 
             for(Rectangle r: obstacles){
-                Vector2D collisionPoint = CollisionDetector.lineRectangle(l, r);
-
-                if(collisionPoint != null){
-                    l.setEndX(collisionPoint.get_x());
-                    l.setEndY(collisionPoint.get_y());
-                }
+                l.updateCollision(r);
             }
         }
     }
@@ -154,9 +146,9 @@ class GameManager {
         Polygon lightSource = new Polygon();
         ArrayList<Double> points = new ArrayList<>();
 
-        for (Line l : rays) {
-            points.add(l.getEndX());
-            points.add(l.getEndY());
+        for (Ray r : rays) {
+            points.add(r.getEndX());
+            points.add(r.getEndY());
         }
         points.add((double) player.get_pos().get_x());
         points.add((double) player.get_pos().get_y());
@@ -229,15 +221,19 @@ class GameManager {
 
         //Top wall
         Line uWall = new Line(0, 0, (float)WIDTH/2, 0);
+        uWall.setFill(Color.BLACK);
         walls.add(uWall);
         //Left wall
         Line lWall = new Line(0, 0, 0, HEIGHT);
+        lWall.setFill(Color.BLACK);
         walls.add(lWall);
         //Right wall
         Line rWall = new Line((float)WIDTH/2, 0, (float)WIDTH/2, HEIGHT);
+        rWall.setFill(Color.BLACK);
         walls.add(rWall);
         //Bottom wall
         Line dWall = new Line(0, HEIGHT, (float)WIDTH/2, HEIGHT);
+        dWall.setFill(Color.BLACK);
         walls.add(dWall);
 
         root.getChildren().addAll(walls);
@@ -255,7 +251,7 @@ class GameManager {
 
         for(int i = 0; i < obstacleCount; i++){
             Rectangle rect = new Rectangle(r.nextInt(WIDTH/2 + 50)-100, r.nextInt(HEIGHT + 10)-10, 50 + r.nextInt(50), 50 + r.nextInt(50));
-            rect.setFill(Color.RED);
+            rect.setFill(Color.rgb(r.nextInt(255), r.nextInt(255), r.nextInt(255)));
             obstacles.add(rect);
         }
         root.getChildren().addAll(obstacles);
@@ -271,13 +267,13 @@ class GameManager {
         rays = new ArrayList<>();
 
         for(int i = 0; i < NUMBER_OF_RAYS; i++){
-            Line line = new Line();
-            line.setStroke(Color.YELLOW);
-            line.startXProperty().bind(player.get_pos().get_property_x());
-            line.startYProperty().bind(player.get_pos().get_property_y());
-            line.toBack();
-            line.setVisible(false);
-            rays.add(line);
+            Ray ray = new Ray();
+            ray.setStroke(Color.YELLOW);
+            ray.startXProperty().bind(player.get_pos().get_property_x());
+            ray.startYProperty().bind(player.get_pos().get_property_y());
+            ray.toBack();
+            ray.setVisible(false);
+            rays.add(ray);
         }
         root.getChildren().addAll(rays);
     }
